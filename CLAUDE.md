@@ -28,8 +28,12 @@ Responder siempre en español rioplatense. El usuario no programa: explicar simp
 - Voz **gratis** hasta monetizar en YouTube; después pasar a **ElevenLabs** (el plan gratis de ElevenLabs no permite uso comercial).
 - Siempre revisar los videos antes de subirlos. Declarar contenido IA en YouTube Studio.
 
-## Estado / pendientes
-- [ ] Correr `ELEGIR_VOZ.bat` (elige el mejor tramo de 15 s de ENTRENAR_VOZ → `MUESTRA_VOZ.wav` y genera `PRUEBA_VOZ_opcion1-3.wav`). Escuchar y elegir.
-- [ ] Bajar en `voz_ia.json`: exaggeration 0.55→0.4, temperature 0.8→0.7.
-- [ ] Regrabar/regenerar Luz Mala Parte 2 (`LM_P2V`, marcada REGRABAR).
+## Estado / pendientes (revisado 05-11)
+- [x] `ELEGIR_VOZ.bat` ya corrió (03-11): hay `MUESTRA_VOZ.wav` y `PRUEBA_VOZ_opcion1-3` (+ "calma" y "calma_lenta"). Falta confirmar cuál eligió el usuario.
+- [x] `voz_ia.json` ya bajado: exaggeration 0.4, temperature 0.7, cfg 0.3, velocidad 0.92.
+- [x] H01_P1 (Charro Negro P1) subido a YouTube 03-11 (programado 11-11 00:00 UTC, id DWzD1opblEU) con la versión vieja.
+- [~] 05-11: H01_P1 rehecho (voz nueva + 4 imágenes); `armar_pc.py` ahora mete efectos de sonido (viento, monedas, caballo). El mp4 nuevo se generó y se tiró a la papelera. Pruebas de estilo de imagen ESTILO_A-D listas en Drive; PRUEBA_CHARRO_A/B en cola.
+- [ ] Elegir estilo de imagen (A-D) y rearmar H01_P1; si queda mejor, reemplazar el video ya subido a YouTube antes del 11-11.
+- [ ] 13 episodios en espera en `voz_ia.json` (H01_P2…H04_P3, LM_P2, LM_P3). Calendario de 33 arranca 10-11: va atrasado.
+- [ ] Regrabar/regenerar Luz Mala Parte 2 (`LM_P2V`, marcada REGRABAR, sale 11-11).
 - [ ] Al terminar cada sesión: actualizar esta sección.
