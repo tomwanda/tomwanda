@@ -23,6 +23,7 @@ Responder siempre en español rioplatense. El usuario no programa: explicar simp
    Parámetros en `voz_ia.json` (exaggeration, cfg_weight, temperature, lista de episodios).
 3. `rvc_voz.py`: RVC (descartado: suena robótico y corta mal porque convierte una voz TTS base).
 4. `armar_pc.py` / `stickman_pc.py`: arman el .mp4 con imágenes + voz + subtítulos.
+5. Subida: Apps Script "Puente Archivo del Monte" (cuenta Google del usuario). Cada 15 min sube a YouTube (programado, según `publishAt` del .json) lo que esté en `A/2 - Aprobados` y lo mueve a `3 - Publicados`. Cuota ≈ 6 videos/día. H01_P1 ya subido y programado (11-11 00:00 UTC).
 
 ## Decisiones
 - Voz **gratis** hasta monetizar en YouTube; después pasar a **ElevenLabs** (el plan gratis de ElevenLabs no permite uso comercial).
@@ -32,4 +33,5 @@ Responder siempre en español rioplatense. El usuario no programa: explicar simp
 - [ ] Correr `ELEGIR_VOZ.bat` (elige el mejor tramo de 15 s de ENTRENAR_VOZ → `MUESTRA_VOZ.wav` y genera `PRUEBA_VOZ_opcion1-3.wav`). Escuchar y elegir.
 - [ ] Bajar en `voz_ia.json`: exaggeration 0.55→0.4, temperature 0.8→0.7.
 - [ ] Regrabar/regenerar Luz Mala Parte 2 (`LM_P2V`, marcada REGRABAR).
+- [ ] Pegar `Codigo_corregido.gs` en el Apps Script de subida (agrega `containsSyntheticMedia: true` = declarar IA, y evita subir duplicado si falla la playlist). Mientras tanto, declarar IA a mano en YouTube Studio.
 - [ ] Al terminar cada sesión: actualizar esta sección.
