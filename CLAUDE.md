@@ -28,8 +28,20 @@ Responder siempre en español rioplatense. El usuario no programa: explicar simp
 - Voz **gratis** hasta monetizar en YouTube; después pasar a **ElevenLabs** (el plan gratis de ElevenLabs no permite uso comercial).
 - Siempre revisar los videos antes de subirlos. Declarar contenido IA en YouTube Studio.
 
-## Estado / pendientes
-- [ ] Correr `ELEGIR_VOZ.bat` (elige el mejor tramo de 15 s de ENTRENAR_VOZ → `MUESTRA_VOZ.wav` y genera `PRUEBA_VOZ_opcion1-3.wav`). Escuchar y elegir.
-- [ ] Bajar en `voz_ia.json`: exaggeration 0.55→0.4, temperature 0.8→0.7.
-- [ ] Regrabar/regenerar Luz Mala Parte 2 (`LM_P2V`, marcada REGRABAR).
+## Fábrica multicanal (visto en Drive el 11-11)
+- Carpeta `Generador PC/Fabrica multicanal/` (`worker.py`, `monitor.py`, `LEEME.md`, `estado.json`). En la PC: `D:\HistoriasIA-dev\fabrica`.
+  Monitor en la PC: `http://127.0.0.1:8789/` o `VER_FABRICA.cmd`. Tarea "Fabrica audiovisual - Procesar pedidos" cada 10 min.
+- Canales nuevos en Drive: `C - OTRA VIDA` (códigos `OV01`, `OV02`) y `D - CURIOSIDADES (canal nuevo)` (códigos `CUR01`…`CUR07`).
+- La fábrica solo deja videos en `1 - Para revisar`; nunca los pasa a Aprobados/Publicados.
+- Cada video publicado tiene un `.json` al lado en `3 - Publicados` con título, fecha `publishAt` y link de YouTube.
+
+## Estado / pendientes (actualizado 11-11)
+- Voces automáticas de terror **pausadas el 11-11** por sonar robóticas: los `*_IA.wav` se movieron a `Voces automaticas roboticas (11-11)`;
+  `voz_ia.json` quedó solo con `H01_P1` y 19 episodios en `episodios_en_espera`. Voz de referencia aprobada: `9B - OFICIAL corregida`.
+- [ ] Decidir la voz: escuchar `COMPARAR - 9B aprobada vs fabrica (11-11).mp3`.
+- [ ] Terror, para revisar: H01_P2, H01_P3, H03_P2, H03_P3, H04_P1, H05_P1, H05_P2, H05_P3.
+- [ ] Curiosidades, para revisar: CUR01_flamencos_v2, CUR02_pulpo_v1 y v3 (elegir una), CUR03_mariposa, CUR04_venus, CUR05_arcoiris, CUR06_luna, CUR07_wombat.
+- [ ] Otra Vida, para revisar: OV02_GUIA_ABUELO_v1 (revisión final), OV01_PILOTO_v1, OV01_SHORT_v1.
+- [ ] `LM_P2` quedó programado en YouTube para el 11-11 21:00 (hora Argentina); confirmar que la voz esté bien.
+- [ ] Correr `ELEGIR_VOZ.bat` si todavía hace falta elegir muestra de voz.
 - [ ] Al terminar cada sesión: actualizar esta sección.
