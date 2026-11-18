@@ -1,0 +1,447 @@
+<title>Fábrica Nocturna</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: una sola columna de teléfono; cabecera fija con el pulso de la PC, pestañas abajo de ella, tarjetas por canal. Mundo: sala de control nocturna, luz de vela ámbar. */
+:root{
+  color-scheme: dark;
+  --bg:#0f0e13; --panel:#18161e; --panel2:#211e29; --line:#2e2a38;
+  --fg:#ece6dc; --muted:#9a93a6; --accent:#e8a33d; --accent-ink:#1a1206;
+  --ok:#6cc18a; --warn:#e8c33d; --bad:#e8655a; --info:#8fa8e8;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--fg)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.45;
+  padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px));padding-block:0 40px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:640px;margin:0 auto}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:14px 0}
+.brand{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+h1{font-family:var(--f-display);font-weight:700;font-size:1.45rem;letter-spacing:-.01em;margin:0;text-wrap:balance}
+.refresh{font:500 .8rem var(--f-body);color:var(--fg);background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+.refresh:focus-visible,.tab:focus-visible,summary:focus-visible,a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.refresh[aria-busy="true"]{color:var(--muted)}
+.pulse{margin-top:12px;display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.dot{width:12px;height:12px;border-radius:50%;flex:none;background:var(--muted)}
+.dot.ok{background:var(--ok);box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 60%,transparent);animation:beat 2s infinite}
+.dot.warn{background:var(--warn)} .dot.bad{background:var(--bad)}
+@keyframes beat{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 55%,transparent)}70%{box-shadow:0 0 0 10px transparent}100%{box-shadow:0 0 0 0 transparent}}
+@media (prefers-reduced-motion:reduce){.dot.ok{animation:none}}
+.pulse b{display:block;font-weight:600}
+.pulse small{color:var(--muted);font-size:.8rem}
+nav.tabs{display:flex;gap:4px;margin-top:12px;border-bottom:1px solid var(--line)}
+.tab{flex:1;font:600 .85rem var(--f-body);color:var(--muted);background:none;border:0;border-bottom:2px solid transparent;padding:10px 4px;cursor:pointer}
+.tab[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+.tab .n{font-family:var(--f-mono);font-weight:500;font-size:.75rem;color:var(--accent);margin-left:4px}
+main{padding-top:16px;display:grid;gap:14px}
+h2{font-family:var(--f-display);font-weight:600;font-size:1.05rem;margin:4px 0 0}
+.lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.card>.hd{padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid var(--line);min-width:0}
+.row .t{flex:1;min-width:0}
+.row .name{font-family:var(--f-mono);font-size:.85rem;overflow-wrap:anywhere}
+.row .sub{font-size:.78rem;color:var(--muted)}
+.row a.open{flex:none;font-size:.8rem;font-weight:600;color:var(--accent);text-decoration:none;padding:6px 10px;border:1px solid color-mix(in srgb,var(--accent) 40%,transparent);border-radius:8px}
+.pill{flex:none;font:500 .72rem var(--f-body);padding:3px 8px;border-radius:999px;background:var(--panel2);color:var(--muted);white-space:nowrap}
+.pill.ok{color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent)}
+.pill.warn{color:var(--warn);background:color-mix(in srgb,var(--warn) 14%,transparent)}
+.pill.bad{color:var(--bad);background:color-mix(in srgb,var(--bad) 16%,transparent)}
+.pill.info{color:var(--info);background:color-mix(in srgb,var(--info) 14%,transparent)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.stat .v{font-family:var(--f-display);font-weight:700;font-size:1.6rem;font-variant-numeric:tabular-nums;line-height:1.1}
+.stat .k{font-size:.75rem;color:var(--muted)}
+details>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid var(--line)}
+details>summary::-webkit-details-marker{display:none}
+details>summary .t{flex:1}
+details>summary::after{content:"›";color:var(--muted);transition:transform .15s}
+details[open]>summary::after{transform:rotate(90deg)}
+.count{font-family:var(--f-mono);font-size:.85rem;color:var(--fg);font-variant-numeric:tabular-nums}
+.empty{padding:12px 14px;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
+.note{background:var(--panel);border:1px dashed var(--line);border-radius:14px;padding:14px;color:var(--muted);font-size:.9rem}
+.note b{color:var(--fg)}
+.note button{margin-top:10px}
+.err{border-color:color-mix(in srgb,var(--bad) 50%,transparent)}
+.err b{color:var(--bad)}
+.why{font-family:var(--f-mono);font-size:.75rem;color:var(--muted);padding:0 14px 12px;white-space:pre-wrap;overflow-wrap:anywhere}
+.btn{font:600 .85rem var(--f-body);color:var(--accent-ink);background:var(--accent);border:0;border-radius:10px;padding:9px 14px;cursor:pointer}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.foot{color:var(--muted);font-size:.75rem;text-align:center;padding-top:8px}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Fábrica Nocturna</h1>
+      <button class="refresh" id="btn-refresh" type="button">Actualizar</button>
+    </div>
+    <div class="pulse" id="pulse">
+      <span class="dot" id="pulse-dot"></span>
+      <div><b id="pulse-title">Conectando con tu Drive…</b><small id="pulse-sub">La primera vez Claude te pide permiso para leer Google Drive.</small></div>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tab-fabrica" aria-selected="true" data-view="fabrica" type="button">Fábrica</button>
+      <button class="tab" role="tab" id="tab-canales" aria-selected="false" data-view="canales" type="button">Canales<span class="n" id="n-revisar"></span></button>
+      <button class="tab" role="tab" id="tab-escenas" aria-selected="false" data-view="escenas" type="button">Escenas<span class="n" id="n-err"></span></button>
+    </nav>
+  </header>
+
+  <main id="view-fabrica" role="tabpanel"></main>
+  <main id="view-canales" role="tabpanel" hidden></main>
+  <main id="view-escenas" role="tabpanel" hidden></main>
+  <p class="foot" id="foot">Se actualiza solo cada minuto mientras la tengas abierta.</p>
+</div>
+
+<script>
+(() => {
+  const SERVER = "Google Drive";
+  const IDS = {
+    root: "1YpSoiyBHs_PRpLxY6F-t6dmqX33U2NLG",
+    fabrica: "1EhXW82ReQ7eSLQd-a5G-ChCwXmlOc1xC",
+    escenas: "12yf_pXXb8aKYHBqwUQQ-XNVpAG09hM9L",
+  };
+  const CHANNELS = [
+    { key: "A", id: "17gpSjJGLddnlfNlwHEN29KKE5CgkNvlW", name: "Historias De La Noche", tag: "Terror", prefix: /^(H\d|LM)/i },
+    { key: "B", id: "16vI9QRRwvcExm9orgGcgUus8l5Lk-OPM", name: "Supervivencia", tag: "Canal nuevo", prefix: /^(SUP|BUN|B\d)/i },
+    { key: "C", id: "1zpppSeB5WzfHKQ_dECkc1nSOwzoHR9Su", name: "Otra Vida", tag: "", prefix: /^OV/i },
+    { key: "D", id: "1UvtH0wypV6Uit_bPA1kRNAgCEZscQvhv", name: "Curiosidades", tag: "Canal nuevo", prefix: /^CUR/i },
+  ];
+  const FOLDER = "application/vnd.google-apps.folder";
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+
+  let mcp = null, busy = false, timer = null;
+  const state = { estado: null, estadoFile: null, channels: {}, escenas: null, errors: {} };
+
+  // ---------- tabs ----------
+  document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => show(t.dataset.view)));
+  function show(view) {
+    document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", String(t.dataset.view === view)));
+    ["fabrica","canales","escenas"].forEach(v => { $("view-" + v).hidden = v !== view; });
+    try { localStorage.setItem("fab-tab", view); } catch (e) {}
+  }
+  try { const v = localStorage.getItem("fab-tab"); if (v) show(v); } catch (e) {}
+
+  // ---------- time helpers ----------
+  function ago(iso) {
+    if (!iso) return "";
+    const ms = Date.now() - new Date(iso).getTime();
+    if (!isFinite(ms)) return "";
+    const m = Math.round(ms / 60000);
+    if (m < 1) return "recién";
+    if (m < 60) return `hace ${m} min`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `hace ${h} h ${m % 60 ? (m % 60) + " min" : ""}`.trim();
+    const d = Math.floor(h / 24);
+    return d === 1 ? "ayer" : `hace ${d} días`;
+  }
+  function hora(iso) {
+    try { return new Date(iso).toLocaleString("es-AR", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); }
+    catch (e) { return iso; }
+  }
+
+  // ---------- Drive calls ----------
+  async function search(query, { pageSize = 100, orderBy = "modifiedTime desc", pages = 3 } = {}) {
+    let out = [], token;
+    for (let i = 0; i < pages; i++) {
+      const input = { query, pageSize, excludeContentSnippets: true };
+      if (orderBy) input.orderBy = orderBy;
+      if (token) input.pageToken = token;
+      const res = await mcp.callTool(SERVER, "search_files", input, { cache: false });
+      const p = res.payload || {};
+      const files = Array.isArray(p.files) ? p.files : [];
+      out = out.concat(files);
+      token = p.nextPageToken;
+      if (!token || !files.length) break;
+    }
+    const seen = new Set();
+    return out.filter(f => f && f.id && !seen.has(f.id) && seen.add(f.id));
+  }
+
+  function b64text(s) {
+    const bin = atob(s.replace(/\s/g, ""));
+    return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0)));
+  }
+  function textFromResult(res) {
+    for (const b of (res && res.content) || []) {
+      if (b && b.resource) {
+        if (typeof b.resource.text === "string") return b.resource.text;
+        if (typeof b.resource.blob === "string") return b64text(b.resource.blob);
+      }
+      if (b && typeof b.blob === "string") return b64text(b.blob);
+      if (b && typeof b.data === "string" && b.type !== "image") { try { return b64text(b.data); } catch (e) {} }
+      if (b && b.type === "text" && typeof b.text === "string" && /^\s*\{/.test(b.text)) {
+        try { const o = JSON.parse(b.text); if (o && o.state) return b.text; } catch (e) {}
+      }
+    }
+    const p = res && res.payload;
+    if (p && typeof p === "object") {
+      if (p.state && p.jobs) return JSON.stringify(p);
+      for (const k of ["content", "data", "base64Content"]) {
+        if (typeof p[k] === "string" && p[k] !== "(file sent separately)") {
+          try { return b64text(p[k]); } catch (e) { return p[k]; }
+        }
+      }
+    }
+    return null;
+  }
+  function unMarkdown(s) { return s.replace(/\\([_\[\]*`#~>()+.!-])/g, "$1"); }
+
+  async function readJson(fileId) {
+    try {
+      const res = await mcp.callTool(SERVER, "download_file_content", { fileId }, { cache: false });
+      const txt = textFromResult(res);
+      if (txt) return JSON.parse(txt);
+    } catch (e) { if (isAuth(e)) throw e; }
+    const res2 = await mcp.callTool(SERVER, "read_file_content", { fileId }, { cache: false });
+    const raw = (res2.payload && res2.payload.fileContent) || "";
+    return JSON.parse(unMarkdown(raw).replace(/\\\\\\\\/g, "\\\\"));
+  }
+  async function readText(fileId) {
+    const res = await mcp.callTool(SERVER, "read_file_content", { fileId }, { cache: false });
+    return unMarkdown((res.payload && res.payload.fileContent) || "");
+  }
+
+  const AUTH = ["needs_reauth","server_not_connected","selection_required","not_in_manifest","blocked_by_policy","approval_required","not_granted","capability_disabled","capability_removed","consent_required"];
+  const isAuth = (e) => e && AUTH.includes(e.code);
+  function explain(e) {
+    const c = e && e.code;
+    if (c === "needs_reauth") return "Google Drive pidió que lo vuelvas a conectar: en claude.ai andá a Configuración → Conectores → Google Drive.";
+    if (c === "server_not_connected" || c === "selection_required") return "No encuentro Google Drive conectado a tu cuenta de Claude. Agregalo en claude.ai → Configuración → Conectores.";
+    if (c === "not_in_manifest" || c === "approval_required" || c === "consent_required") return "La app necesita tu permiso para leer Google Drive. Tocá el botón y aceptá.";
+    if (c === "blocked_by_policy") return "Tu organización bloquea este acceso a Google Drive.";
+    if (c === "not_granted" || c === "capability_disabled" || c === "capability_removed") return "Esta vista no puede conectarse a Google Drive. Abrí la app desde claude.ai o la app de Claude.";
+    if (c === "server_unavailable") return "Google Drive no respondió. Probá de nuevo en un rato.";
+    if (c === "tool_error") return "Drive devolvió un error: " + (e.message || "").slice(0, 160);
+    return "No pude leer el Drive (" + (c || "error") + ").";
+  }
+
+  // ---------- loaders (each section independent) ----------
+  async function loadEstado() {
+    const files = await search(`parentId = '${IDS.fabrica}' and title = 'estado.json'`, { pages: 1, pageSize: 5 });
+    const f = files[0];
+    if (!f) throw { code: "tool_error", message: "No encontré estado.json en Fabrica multicanal." };
+    state.estadoFile = f;
+    state.estado = await readJson(f.id);
+  }
+
+  async function loadChannels() {
+    const parents = CHANNELS.map(c => `parentId = '${c.id}'`).join(" or ");
+    const folders = await search(`(${parents}) and mimeType = '${FOLDER}'`, { orderBy: "", pages: 2 });
+    await Promise.all(CHANNELS.map(async ch => {
+      const subs = folders.filter(f => f.parentId === ch.id && !/configuraci/i.test(f.title))
+        .sort((a, b) => a.title.localeCompare(b.title, "es", { numeric: true }));
+      const files = await search(`'${ch.id}' in ancestors and mimeType != '${FOLDER}'`, { pages: 3 });
+      const byParent = {};
+      files.forEach(f => (byParent[f.parentId] = byParent[f.parentId] || []).push(f));
+      state.channels[ch.key] = { subs: subs.map(s => ({ ...s, files: byParent[s.id] || [] })) };
+    }));
+  }
+
+  async function loadEscenas() {
+    const [folders, marks] = await Promise.all([
+      search(`parentId = '${IDS.escenas}' and mimeType = '${FOLDER}'`, { pages: 1, pageSize: 60 }),
+      search(`'${IDS.escenas}' in ancestors and (title = 'listo.txt' or title = 'error.txt' or title = 'aprobado.txt')`, { pages: 2 }),
+    ]);
+    const byFolder = {};
+    marks.forEach(m => {
+      const cur = byFolder[m.parentId];
+      if (!cur || new Date(m.modifiedTime) > new Date(cur.modifiedTime)) byFolder[m.parentId] = m;
+    });
+    state.escenas = folders.map(f => ({ ...f, mark: byFolder[f.id] || null }));
+  }
+
+  // ---------- render ----------
+  const JOB = {
+    para_revisar: ["Para revisar", "warn"], aprobado: ["Aprobado", "ok"], publicado: ["Publicado", "ok"],
+    en_proceso: ["Fabricando", "info"], corriendo: ["Fabricando", "info"], generando: ["Fabricando", "info"], pendiente: ["En cola", ""],
+    error: ["Error", "bad"], fallo: ["Error", "bad"], vuelta_completada: ["Vuelta terminada", "ok"],
+  };
+  const human = (s) => (JOB[s] ? JOB[s][0] : String(s || "—").replace(/_/g, " ").replace(/^./, c => c.toUpperCase()));
+  const tone = (s) => (JOB[s] ? JOB[s][1] : (/err|fall/i.test(s || "") ? "bad" : ""));
+
+  function channelOf(code, output) {
+    if (output) {
+      const hit = CHANNELS.find(c => output.toLowerCase().includes(c.name.toLowerCase().split(" ")[0]));
+      if (hit) return hit;
+      const k = output.match(/\\([A-D]) - /); if (k) return CHANNELS.find(c => c.key === k[1]);
+    }
+    return CHANNELS.find(c => c.prefix.test(code)) || null;
+  }
+
+  function renderPulse() {
+    const dot = $("pulse-dot"), t = $("pulse-title"), s = $("pulse-sub");
+    if (state.errors.estado && !state.estado) {
+      dot.className = "dot bad"; t.textContent = "No pude leer el estado de la PC"; s.textContent = explain(state.errors.estado); return;
+    }
+    if (!state.estado) return;
+    const e = state.estado;
+    const when = e.updated || (state.estadoFile && state.estadoFile.modifiedTime);
+    const min = (Date.now() - new Date(when).getTime()) / 60000;
+    const running = /proceso|corr|gener|trabaj|activ/i.test(e.state || "") || ((e.activity && e.activity.factory) || []).length > 0;
+    if (min <= 30) { dot.className = "dot ok"; t.textContent = running ? "La PC está fabricando" : "La PC está prendida"; }
+    else if (min <= 120) { dot.className = "dot warn"; t.textContent = "La PC no da noticias hace un rato"; }
+    else { dot.className = "dot bad"; t.textContent = "La PC parece apagada o trabada"; }
+    s.textContent = `Último aviso ${ago(when)} · ${human(e.state)}`;
+  }
+
+  function renderFabrica() {
+    const v = $("view-fabrica");
+    if (state.errors.estado && !state.estado) { v.innerHTML = authNote(state.errors.estado); bindRetry(v); return; }
+    if (!state.estado) { v.innerHTML = `<div class="note">Leyendo el estado de la fábrica…</div>`; return; }
+    const e = state.estado;
+    const jobs = Object.entries(e.jobs || {}).map(([code, j]) => ({ code, ...j }));
+    const cnt = (pred) => jobs.filter(pred).length;
+    const revisar = cnt(j => j.state === "para_revisar");
+    const errores = cnt(j => tone(j.state) === "bad");
+    const activos = cnt(j => tone(j.state) === "info");
+    const act = (e.activity && e.activity.factory) || [];
+    const prods = e.productores || [];
+
+    let html = `<div class="stats">
+      <div class="stat"><div class="v">${activos + act.length}</div><div class="k">fabricando</div></div>
+      <div class="stat"><div class="v" style="color:var(--warn)">${revisar}</div><div class="k">para revisar</div></div>
+      <div class="stat"><div class="v" style="color:${errores ? "var(--bad)" : "var(--fg)"}">${errores}</div><div class="k">con error</div></div>
+    </div>`;
+
+    if (act.length || prods.length) {
+      html += `<div class="card"><div class="hd"><h2>Ahora mismo</h2></div>` +
+        act.concat(prods).map(a => `<div class="row"><div class="t"><div class="name">${esc(typeof a === "string" ? a : (a.codigo || a.code || a.job || a.nombre || JSON.stringify(a)))}</div>${a && a.detalle ? `<div class="sub">${esc(a.detalle)}</div>` : ""}</div><span class="pill info">En curso</span></div>`).join("") + `</div>`;
+    }
+
+    const order = { bad: 0, info: 1, warn: 2, ok: 3, "": 4 };
+    jobs.sort((a, b) => (order[tone(a.state)] - order[tone(b.state)]) || String(b.fin || b.inicio || "").localeCompare(String(a.fin || a.inicio || "")));
+    html += `<div class="card"><div class="hd"><h2>Trabajos</h2><span class="lbl">${jobs.length}</span></div>`;
+    html += jobs.length ? jobs.map(j => {
+      const ch = channelOf(j.code, j.output);
+      const file = j.output ? j.output.split(/[\\/]/).pop() : "";
+      const bits = [ch ? ch.name : "", j.fin ? "terminó " + ago(j.fin) : (j.inicio ? "empezó " + ago(j.inicio) : ""), j.intentos > 1 ? `${j.intentos} intentos` : ""].filter(Boolean);
+      return `<div class="row"><div class="t"><div class="name">${esc(j.code)}</div>
+        <div class="sub">${esc(bits.join(" · "))}${j.detalle ? "<br>" + esc(j.detalle) : ""}${file && file !== j.code + ".mp4" ? "<br>" + esc(file) : ""}</div></div>
+        <span class="pill ${tone(j.state)}">${esc(human(j.state))}</span></div>`;
+    }).join("") : `<div class="empty">No hay trabajos anotados.</div>`;
+    html += `</div>`;
+    html += `<p class="lbl" style="text-align:center">Estado escrito por la PC · ${esc(hora(e.updated))}</p>`;
+    v.innerHTML = html;
+    $("n-revisar").textContent = revisar ? String(revisar) : "";
+  }
+
+  function fileIcon(f) {
+    const m = f.mimeType || "";
+    if (m.startsWith("video/")) return "Video";
+    if (m.startsWith("audio/")) return "Audio";
+    if (m.startsWith("image/")) return "Imagen";
+    if (m.includes("json") || m.startsWith("text/")) return "Texto";
+    return "Archivo";
+  }
+  function sizeOf(f) { const n = +f.fileSize; if (!n) return ""; return n > 1e6 ? (n / 1e6).toFixed(1) + " MB" : Math.max(1, Math.round(n / 1e3)) + " KB"; }
+
+  function renderCanales() {
+    const v = $("view-canales");
+    if (state.errors.canales && !Object.keys(state.channels).length) { v.innerHTML = authNote(state.errors.canales); bindRetry(v); return; }
+    if (!Object.keys(state.channels).length) { v.innerHTML = `<div class="note">Leyendo las carpetas de los canales…</div>`; return; }
+    let totalRev = 0;
+    const html = CHANNELS.map(ch => {
+      const c = state.channels[ch.key];
+      if (!c) return "";
+      const find = (re) => c.subs.find(s => re.test(s.title));
+      const rev = find(/^1\b|revisar/i), apr = find(/^2\b|aprobad/i), pub = find(/^3\b|publicad/i);
+      const nRev = rev ? rev.files.length : 0; totalRev += nRev;
+      const head = `<div class="hd"><div><span class="lbl">Canal ${ch.key}${ch.tag ? " · " + esc(ch.tag) : ""}</span><h2>${esc(ch.name)}</h2></div>
+        <div class="chips">${nRev ? `<span class="pill warn">${nRev} para revisar</span>` : ""}${pub ? `<span class="pill">${pub.files.length} publicados</span>` : ""}</div></div>`;
+      const folders = c.subs.map(s => {
+        const files = s.files.slice().sort((a, b) => String(b.modifiedTime).localeCompare(String(a.modifiedTime)));
+        const openAttr = s === rev && files.length ? " open" : "";
+        const list = files.length ? files.slice(0, 40).map(f => `<div class="row"><div class="t"><div class="name">${esc(f.title)}</div>
+            <div class="sub">${esc([fileIcon(f), sizeOf(f), ago(f.modifiedTime)].filter(Boolean).join(" · "))}</div></div>
+            <a class="open" href="${esc(f.viewUrl || "https://drive.google.com/file/d/" + f.id + "/view")}" target="_blank" rel="noopener">Abrir</a></div>`).join("")
+          + (files.length > 40 ? `<div class="empty">…y ${files.length - 40} más. <a class="open" href="${esc(s.viewUrl)}" target="_blank" rel="noopener">Ver carpeta</a></div>` : "")
+          : `<div class="empty">Vacía.</div>`;
+        return `<details${openAttr}><summary><span class="t">${esc(s.title)}</span><span class="count">${files.length}</span></summary>${list}</details>`;
+      }).join("");
+      return `<section class="card">${head}${folders || `<div class="empty">Sin carpetas.</div>`}</section>`;
+    }).join("");
+    v.innerHTML = html;
+    $("n-revisar").textContent = totalRev ? String(totalRev) : "";
+  }
+
+  function renderEscenas() {
+    const v = $("view-escenas");
+    if (state.errors.escenas && !state.escenas) { v.innerHTML = authNote(state.errors.escenas); bindRetry(v); return; }
+    if (!state.escenas) { v.innerHTML = `<div class="note">Leyendo las escenas que genera la PC…</div>`; return; }
+    const MARK = { "listo.txt": ["Imágenes listas", "ok"], "aprobado.txt": ["Aprobado", "ok"], "error.txt": ["Error", "bad"] };
+    const list = state.escenas.slice().sort((a, b) => String(b.modifiedTime).localeCompare(String(a.modifiedTime)));
+    const errs = list.filter(f => f.mark && f.mark.title === "error.txt");
+    $("n-err").textContent = errs.length ? String(errs.length) : "";
+    let html = `<div class="note">Cada carpeta es un episodio (por ejemplo <b>H10_P3</b> = historia 10, parte 3). La PC deja <b>listo.txt</b> cuando termina las imágenes o <b>error.txt</b> si algo falló.</div>`;
+    html += `<div class="card"><div class="hd"><h2>Últimos episodios</h2><span class="lbl">${list.length}</span></div>` +
+      list.map(f => {
+        const m = f.mark ? MARK[f.mark.title] : ["Generando…", "info"];
+        const isErr = f.mark && f.mark.title === "error.txt";
+        return `<div class="row"><div class="t"><div class="name">${esc(f.title)}</div><div class="sub">${esc(ago((f.mark || f).modifiedTime))}</div></div>
+          ${isErr ? `<button class="refresh" type="button" data-why="${esc(f.mark.id)}">Ver motivo</button>` : ""}
+          <span class="pill ${m[1]}">${m[0]}</span>
+          <a class="open" href="${esc(f.viewUrl)}" target="_blank" rel="noopener">Ver</a></div>
+          ${isErr ? `<div class="why" id="why-${esc(f.mark.id)}" hidden></div>` : ""}`;
+      }).join("") + `</div>`;
+    v.innerHTML = html;
+    v.querySelectorAll("[data-why]").forEach(b => b.addEventListener("click", async () => {
+      const id = b.dataset.why, box = $("why-" + id);
+      box.hidden = false; box.textContent = "Leyendo…";
+      try {
+        const t = await readText(id);
+        let msg = t;
+        try { const o = JSON.parse(t); msg = o.motivo || t; } catch (e) {}
+        box.textContent = msg.replace(/\\\\+/g, "\\");
+      } catch (e) { box.textContent = explain(e); }
+    }));
+  }
+
+  function authNote(e) {
+    const ask = e && ["not_in_manifest","approval_required","consent_required","upstream_error"].includes(e.code);
+    return `<div class="note err"><b>No pude leer esta parte.</b><br>${esc(explain(e))}${ask || !isAuth(e) ? `<br><button class="btn" type="button" data-retry>Probar de nuevo</button>` : ""}</div>`;
+  }
+  function bindRetry(v) { const b = v.querySelector("[data-retry]"); if (b) b.addEventListener("click", () => refresh()); }
+
+  function renderAll() { renderPulse(); renderFabrica(); renderCanales(); renderEscenas(); }
+
+  // ---------- refresh loop ----------
+  async function refresh() {
+    if (busy || !mcp) return;
+    busy = true; $("btn-refresh").setAttribute("aria-busy", "true"); $("btn-refresh").textContent = "Leyendo…";
+    const run = async (key, fn) => { try { await fn(); delete state.errors[key]; } catch (e) { state.errors[key] = e; } };
+    // estado first (it triggers the one-time Drive permission), then the rest in parallel
+    await run("estado", loadEstado);
+    renderPulse(); renderFabrica();
+    await Promise.all([run("canales", loadChannels), run("escenas", loadEscenas)]);
+    renderAll();
+    $("foot").textContent = `Leído ${new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })} · se actualiza solo cada minuto.`;
+    busy = false; $("btn-refresh").removeAttribute("aria-busy"); $("btn-refresh").textContent = "Actualizar";
+  }
+  function schedule() {
+    clearInterval(timer);
+    timer = setInterval(() => { if (!document.hidden) refresh(); }, 60000);
+  }
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) refresh(); });
+  $("btn-refresh").addEventListener("click", () => refresh());
+  setInterval(renderPulse, 30000);
+
+  renderAll();
+  const boot = window.claude && window.claude.use ? window.claude.use("mcp") : Promise.resolve(null);
+  boot.then(m => {
+    mcp = m;
+    if (!mcp) {
+      $("pulse-dot").className = "dot bad";
+      $("pulse-title").textContent = "Abrí esta app desde Claude";
+      $("pulse-sub").textContent = "Solo puede leer tu Drive cuando la abrís en claude.ai o en la app de Claude.";
+      return;
+    }
+    refresh(); schedule();
+  }).catch(() => {});
+})();
+</script>

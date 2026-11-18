@@ -24,6 +24,12 @@ Responder siempre en español rioplatense. El usuario no programa: explicar simp
 3. `rvc_voz.py`: RVC (descartado: suena robótico y corta mal porque convierte una voz TTS base).
 4. `armar_pc.py` / `stickman_pc.py`: arman el .mp4 con imágenes + voz + subtítulos.
 
+## App del teléfono
+- "Fábrica Nocturna": https://claude.ai/artifact/RDnWytNrdjkvvJPWzdR7Z8 (copia en `app_telefono/fabrica.html`).
+- Lee Google Drive en vivo (conector de Claude): `Configuración (no tocar)/Fabrica multicanal/estado.json`, carpetas de los canales A–D y `4 - Escenas` (listo.txt / error.txt / aprobado.txt).
+- Hay 4 canales en Drive: A Terror, B Supervivencia, C Otra Vida (OV), D Curiosidades (CUR).
+- Próximo paso posible: que la PC escriba un "latido" cada minuto para ver qué está haciendo en el momento.
+
 ## Decisiones
 - Voz **gratis** hasta monetizar en YouTube; después pasar a **ElevenLabs** (el plan gratis de ElevenLabs no permite uso comercial).
 - Siempre revisar los videos antes de subirlos. Declarar contenido IA en YouTube Studio.
